@@ -1,9 +1,9 @@
 import {NotFoundContainer, Heading, Desc, Image} from './styledComponents'
 // import Header from '../Header'
-import VideoContext from '../../context/VideoContext'
+import CartContext from '../../context/CartContext'
 
 const NotFound = () => (
-  <VideoContext.Consumer>
+  <CartContext.Consumer>
     {value => {
       const {isDarkTheme} = value
 
@@ -25,13 +25,13 @@ const NotFound = () => (
               Page Not Found
             </Heading>
             <Desc isDark={isDarkDesc}>
-              we’re sorry, the page you requested could not be found
+              we are sorry, the page you requested could not be found.
             </Desc>
           </NotFoundContainer>
         </>
       )
     }}
-  </VideoContext.Consumer>
+  </CartContext.Consumer>
 )
 
 export default NotFound

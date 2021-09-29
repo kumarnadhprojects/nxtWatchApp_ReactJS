@@ -1,35 +1,28 @@
 import {
-  DetailsLink,
-  ListItem,
+  VideoCardContainer,
   ThumbnailImage,
-  Heading,
-  Desc,
+  VideoCardBottomContainer,
+  VideoDetailsContainer,
+  VideoDetailsText,
+  NavLink,
 } from './styledComponents'
-import VideoContext from '../../context/VideoContext'
 
-const GamingVideoItem = props => (
-  <VideoContext.Consumer>
-    {value => {
-      const {isDarkTheme} = value
-      const textColor = isDarkTheme ? '#f9f9f9' : '#181818'
+const VideoCardTwo = props => {
+  const {details} = props
+  const {title, id, thumbnailUrl, viewCount} = details
+  return (
+    <NavLink to={`videos/${id}`}>
+      <VideoCardContainer>
+        <ThumbnailImage src={thumbnailUrl} alt="video thumbnail" />
+        <VideoCardBottomContainer>
+          <VideoDetailsContainer>
+            <VideoDetailsText>{title}</VideoDetailsText>
+            <VideoDetailsText>{viewCount} views</VideoDetailsText>
+          </VideoDetailsContainer>
+        </VideoCardBottomContainer>
+      </VideoCardContainer>
+    </NavLink>
+  )
+}
 
-      const {gamingVideos} = props
-
-      const {id, thumbnailUrl, title, viewCount} = gamingVideos
-
-      return (
-        <DetailsLink to={`/videos/${id}`}>
-          <ListItem>
-            <ThumbnailImage src={thumbnailUrl} alt="video thumbnail" />
-
-            <Heading textColor={textColor}>{title}</Heading>
-
-            <Desc textColor={textColor}>{viewCount}</Desc>
-          </ListItem>
-        </DetailsLink>
-      )
-    }}
-  </VideoContext.Consumer>
-)
-
-export default GamingVideoItem
+export default VideoCardTwo

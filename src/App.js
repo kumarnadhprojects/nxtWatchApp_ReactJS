@@ -1,87 +1,84 @@
-import {Route, Switch, Redirect} from 'react-router-dom'
 import {Component} from 'react'
-import LoginForm from './components/LoginForm'
-import Home from './components/Home'
-import NotFound from './components/NotFound'
+import {Route, Switch, Redirect} from 'react-router-dom'
 
-import ProtectedRoute from './components/ProtectedRoute'
+import LoginForm from './components/LoginRoute'
+import HomeRoute from './components/HomeRoute'
+import NotFound from './components/NotFound'
+import ProtectedRoute from './components/protectedRoute'
+import VideoDetails from './components/VideoItemDetailsRoute'
+import TrendingRoute from './components/TrendingRoute'
+import GamingRoute from './components/GamingRoute'
+import SavedVideosRoute from './components/SavedVideosRoute'
+
+import CartContext from './context/CartContext'
 
 import './App.css'
-import Trending from './components/Trending'
-import Gaming from './components/Gaming'
-import SavedVideos from './components/SavedVideos'
-import VideoItemDetails from './components/VideoItemDetails'
-import VideoContext from './context/VideoContext'
 
 class App extends Component {
   state = {
-    videoList: [],
     isDarkTheme: false,
+    savedVideos: [],
+    activeTab: 'HOME',
   }
 
-  toggleTheme = () => {
-    this.setState(prevState => ({
-      isDarkTheme: !prevState.isDarkTheme,
-    }))
+  onChangeTheme = () => {
+    this.setState(prev => ({isDarkTheme: !prev.isDarkTheme}))
   }
 
-  addVideoItem = product => {
-    const {videoList} = this.state
-    const productObject = videoList.find(
-      eachCartItem => eachCartItem.id === product.id,
-    )
-    console.log(productObject)
-    if (productObject) {
-      this.setState(prevState => ({
-        videoList: prevState.videoList.map(eachCartItem => {
-          if (productObject.id === eachCartItem.id) {
-            // const updatedQuantity = eachCartItem.quantity + product.quantity
+  addToSaveVideos = videoDetails => {
+    const {savedVideos} = this.state
+    const videoObject = savedVideos.find(each => each.id === videoDetails.id)
 
-            return {...eachCartItem}
-          }
-
-          return eachCartItem
-        }),
+    if (videoObject) {
+      this.setState(prev => ({
+        savedVideos: [...prev.savedVideos],
       }))
     } else {
-      const updatedCartList = [...videoList, product]
-      this.setState({videoList: updatedCartList})
+      this.setState({savedVideos: [...savedVideos, videoDetails]})
     }
   }
 
-  //   removeCartItem = id => {
-  //     const {cartList} = this.state
-  //     const updatedList = cartList.filter(eachItem => eachItem.id !== id)
-  //     this.setState({cartList: updatedList})
-  //   }
+  removeSaveVideos = id => {
+    const {savedVideos} = this.state
+    const updatedVideos = savedVideos.filter(each => each.id !== id)
+    this.setState({savedVideos: updatedVideos})
+  }
+
+  activeTabItem = item => {
+    this.setState({activeTab: item})
+  }
 
   render() {
-    const {videoList, isDarkTheme} = this.state
+    const {isDarkTheme, savedVideos, activeTab} = this.state
+    console.log(isDarkTheme)
+
     return (
-      <VideoContext.Provider
+      <CartContext.Provider
         value={{
-          videoList,
           isDarkTheme,
-          toggleTheme: this.toggleTheme,
-          addVideoItem: this.addVideoItem,
-          removeVideoItem: this.removeVideoItem,
+          savedVideos,
+          addToSaveVideos: this.addToSaveVideos,
+          activeTabItem: this.activeTabItem,
+          activeTab,
+          onChangeTheme: this.onChangeTheme,
+          removeSaveVideos: this.removeSaveVideos,
         }}
       >
         <Switch>
           <Route exact path="/login" component={LoginForm} />
-          <ProtectedRoute exact path="/" component={Home} />
-          <ProtectedRoute exact path="/trending" component={Trending} />
-          <ProtectedRoute exact path="/gaming" component={Gaming} />
-          <ProtectedRoute exact path="/saved-videos" component={SavedVideos} />
+          <ProtectedRoute exact path="/" component={HomeRoute} />
+          <ProtectedRoute exact path="/trending" component={TrendingRoute} />
+          <ProtectedRoute exact path="/gaming" component={GamingRoute} />
           <ProtectedRoute
             exact
-            path="/videos/:id"
-            component={VideoItemDetails}
+            path="/saved-videos"
+            component={SavedVideosRoute}
           />
+          <ProtectedRoute exact path="/videos/:id" component={VideoDetails} />
           <Route path="/not-found" component={NotFound} />
           <Redirect to="not-found" />
         </Switch>
-      </VideoContext.Provider>
+      </CartContext.Provider>
     )
   }
 }
